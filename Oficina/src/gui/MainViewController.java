@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alerta;
@@ -34,12 +35,15 @@ public class MainViewController implements Initializable {
 
 	@FXML
 	public void onMenuItemDepartamento() {
-		loadView2("/gui/Departamento.fxml");
+		loadView("/gui/Departamento.fxml",(DepartamentoController controller) -> {
+			controller.setDepartamento(new ServicoDepartamento());
+			controller.updateTableView();
+		});
 	}
 
 	@FXML
 	public void onMenuItemSobre() {
-		loadView("/gui/Sobre.fxml");
+		loadView("/gui/Sobre.fxml", x->{} );
 	}
 
 	@Override
@@ -49,7 +53,7 @@ public class MainViewController implements Initializable {
 
 	// Instancia o fxml com o loader
 	//esse synchronized garante que o processo nao vai ser interrompido ;
-	private synchronized void loadView(String absoluteName) {
+	private synchronized<T> void loadView(String absoluteName,Consumer<T>acaoInicial) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox newVBox = loader.load();
@@ -60,6 +64,10 @@ public class MainViewController implements Initializable {
 			mainVBox.getChildren().clear();
 			mainVBox.getChildren().add(mainMenu);
 			mainVBox.getChildren().addAll(newVBox.getChildren());
+			T controller = loader.getController();
+			acaoInicial.accept(controller);
+			
+			
 		} catch (IOException e) {
 			Alerta.showAlert("Excessao IO", "erro de carregamento da pagina", e.getMessage(), AlertType.ERROR);
 		}
