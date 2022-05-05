@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.entities.DepartamentoLista;
 
 public class DepartamentoFormaController implements Initializable{
 
@@ -24,6 +25,15 @@ public class DepartamentoFormaController implements Initializable{
 	private Button btSave;
 	@FXML
 	private Button btCancela;
+	 
+	private DepartamentoLista entidade;
+	
+	 
+	//serve para setar novos departamentos
+	public void setDepartamento(DepartamentoLista entidade) {
+		this.entidade = entidade;
+	}
+	
 	@FXML
 	public void onBtSalvarAcao(){
 		System.out.println("funcionou");
@@ -58,4 +68,12 @@ public class DepartamentoFormaController implements Initializable{
 		Restriçoes.setTextFieldMaxLength(txtNome, 30);
 	}
 
+	//vai colocar os valores da classe na caixinha;
+	public void UpdateFormaData() {
+		if(entidade==null) {
+			throw new IllegalStateException("entidade esta nula");
+		}
+		txtId.setText(String.valueOf(entidade.getId()));
+		txtNome.setText(String.valueOf(entidade.getName()));
+	}
 }
