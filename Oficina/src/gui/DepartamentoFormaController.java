@@ -5,16 +5,24 @@ import java.util.ResourceBundle;
 
 import javax.swing.SpringLayout.Constraints;
 
+import db.DbException;
+import gui.util.Alerta;
 import gui.util.Restriçoes;
+import gui.util.Utils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.DepartamentoLista;
+import model.services.ServicoDepartamento;
 
 public class DepartamentoFormaController implements Initializable{
 
+	private ServicoDepartamento servico ;
+	
 	@FXML
 	private TextField txtId;
 	@FXML
@@ -33,14 +41,37 @@ public class DepartamentoFormaController implements Initializable{
 	public void setDepartamento(DepartamentoLista entidade) {
 		this.entidade = entidade;
 	}
+	public void setServicoDepartamento(ServicoDepartamento servico) {
+		this.servico= servico;
+	}
 	
 	@FXML
-	public void onBtSalvarAcao(){
-		System.out.println("funcionou");
+	public void onBtSalvarAcao(ActionEvent event){
+		if(entidade == null) {
+			throw new IllegalStateException("entidade esta nula");
+		}
+		if(servico == null) {
+			throw new IllegalStateException("serviço esta nulo");
+		}
+		try {
+		 entidade = getFormaData();
+		 servico.saveOrUpdate(entidade);
+		 Utils.currentStage(event).close();
+		}
+		catch(DbException e) {
+			Alerta.showAlert("erro ao salvar o objeto", null, e.getMessage(), AlertType.ERROR);
+		}
+	}
+	private DepartamentoLista getFormaData() {
+		DepartamentoLista obj  = new DepartamentoLista();
+		obj.setId(Utils.tryParseToInt(txtId.getText()));
+		obj.setName(txtNome.getText());
+		return obj;
 	}
 	@FXML
-	public void onBtCancelarAcao(){
-		System.out.println("deu boa");
+	public void onBtCancelarAcao(ActionEvent event){
+        //serve para fechar a janela
+		Utils.currentStage(event).close();
 		
 	}
 	
