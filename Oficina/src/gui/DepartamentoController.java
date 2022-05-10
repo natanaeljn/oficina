@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 import model.entities.DepartamentoLista;
 import model.services.ServicoDepartamento;
 
-public class DepartamentoController implements Initializable{
+public class DepartamentoController implements Initializable,MudarDataListado{
     
 	private ServicoDepartamento servico;
 	
@@ -86,6 +86,7 @@ public class DepartamentoController implements Initializable{
 			DepartamentoFormaController controller = loader.getController();
 			controller.setDepartamento(obj);
 			controller.setServicoDepartamento(new ServicoDepartamento());
+			controller.reescreverData(this);
 			controller.UpdateFormaData();
 			
 			Stage dialogStage = new Stage();
@@ -99,6 +100,12 @@ public class DepartamentoController implements Initializable{
 		catch(IOException e) {
 			Alerta.showAlert("IO excessao", "errro de carregamento", e.getMessage(), AlertType.ERROR);
 		}
+	}
+
+	@Override
+	public void onDataMudanca() {
+		updateTableView();
+		
 	}
 
 }

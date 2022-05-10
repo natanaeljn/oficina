@@ -1,9 +1,9 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-
-import javax.swing.SpringLayout.Constraints;
 
 import db.DbException;
 import gui.util.Alerta;
@@ -22,6 +22,8 @@ import model.services.ServicoDepartamento;
 public class DepartamentoFormaController implements Initializable{
 
 	private ServicoDepartamento servico ;
+	
+	private List<MudarDataListado> MudancaDeDatas = new ArrayList<>();
 	
 	@FXML
 	private TextField txtId;
@@ -44,6 +46,9 @@ public class DepartamentoFormaController implements Initializable{
 	public void setServicoDepartamento(ServicoDepartamento servico) {
 		this.servico= servico;
 	}
+	public void reescreverData(MudarDataListado novo) {
+		MudancaDeDatas.add(novo);
+	}
 	
 	@FXML
 	public void onBtSalvarAcao(ActionEvent event){
@@ -56,11 +61,18 @@ public class DepartamentoFormaController implements Initializable{
 		try {
 		 entidade = getFormaData();
 		 servico.saveOrUpdate(entidade);
+		 notificacaoMudarData();
 		 Utils.currentStage(event).close();
 		}
 		catch(DbException e) {
 			Alerta.showAlert("erro ao salvar o objeto", null, e.getMessage(), AlertType.ERROR);
 		}
+	}
+	private void notificacaoMudarData() {
+		for(MudarDataListado novo: MudancaDeDatas) {
+			novo.onDataMudanca();
+		}
+		
 	}
 	private DepartamentoLista getFormaData() {
 		DepartamentoLista obj  = new DepartamentoLista();
@@ -70,7 +82,7 @@ public class DepartamentoFormaController implements Initializable{
 	}
 	@FXML
 	public void onBtCancelarAcao(ActionEvent event){
-        //serve para fechar a janela
+        //serve para fechar a janela ao clicar
 		Utils.currentStage(event).close();
 		
 	}
