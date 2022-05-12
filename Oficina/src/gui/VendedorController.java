@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -24,7 +25,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.entities.Seller;
-import model.services.ServicoDepartamento;
 import model.services.VendedorDepartamento;
 
 public class VendedorController implements Initializable, MudarDataListado {
@@ -37,6 +37,12 @@ public class VendedorController implements Initializable, MudarDataListado {
 	private TableColumn<Seller, Integer> tableColumnId;
 	@FXML
 	private TableColumn<Seller, String> tableColumnName;
+	@FXML
+	private TableColumn<Seller, String> tableColumnEmail;
+	@FXML
+	private TableColumn<Seller, Date> tableColumnNiver;
+	@FXML
+	private TableColumn<Seller, Double> tableColumnSalarioBase;
 	@FXML
 	private TableColumn<Seller, Seller> tableColumnEdicao;
 	@FXML
@@ -67,6 +73,13 @@ public class VendedorController implements Initializable, MudarDataListado {
 		// isso e um padrao do javafx para iniciar o comportamento das colunas;
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		tableColumnNiver.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		Utils.formatTableColumnDate(tableColumnNiver, "dd/MM/yyyy");
+		tableColumnSalarioBase.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		
+		
+		Utils.formatTableColumnDouble(tableColumnSalarioBase,2);
 		// isso serve para o tableView acompanhar a janela no tamanho e nao ficar
 		// cortada;
 		Stage stage = (Stage) Main.getMainScene().getWindow();
