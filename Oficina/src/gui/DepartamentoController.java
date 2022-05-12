@@ -3,9 +3,11 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import application.Main;
+import db.DbIntegrityException;
 import gui.util.Alerta;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -18,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -40,6 +43,8 @@ public class DepartamentoController implements Initializable, MudarDataListado {
 	private TableColumn<DepartamentoLista, String> tableColumnName;
 	@FXML
 	private TableColumn<DepartamentoLista, DepartamentoLista> tableColumnEdicao;
+	@FXML
+	private TableColumn<DepartamentoLista, DepartamentoLista> tableColumnRemover;
 	@FXML
 	private Button btNovo;
 	private ObservableList<DepartamentoLista> obsList;
@@ -81,6 +86,7 @@ public class DepartamentoController implements Initializable, MudarDataListado {
 		obsList = FXCollections.observableArrayList(list);
 		tableViewDepartamento.setItems(obsList);
 		initEditButtons();
+		initRemoveButtons();
 	}
 
 	private void createDialogForm(DepartamentoLista obj, String absoluteName, Stage parentStage) {
@@ -112,7 +118,7 @@ public class DepartamentoController implements Initializable, MudarDataListado {
 
 	}
 
-	//vai criar um botao de ediçao em cada linha da tabela
+	// vai criar um botao de ediçao em cada linha da tabela
 	private void initEditButtons() {
 		tableColumnEdicao.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnEdicao.setCellFactory(param -> new TableCell<DepartamentoLista, DepartamentoLista>() {
@@ -130,6 +136,40 @@ public class DepartamentoController implements Initializable, MudarDataListado {
 						event -> createDialogForm(obj, "/gui/DepartamentoForma.fxml", Utils.currentStage(event)));
 			}
 		});
+	}
+
+	private void initRemoveButtons() {
+		tableColumnRemover.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		tableColumnRemover.setCellFactory(param -> new TableCell<DepartamentoLista, DepartamentoLista>() {
+			private final Button button = new Button("remover");
+
+			@Override
+			protected void updateItem(DepartamentoLista obj, boolean empty) {
+				super.updateItem(obj, empty);
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				setGraphic(button);
+				button.setOnAction(event -> removeEntity(obj));
+			}
+		});
+	}
+
+	private void removeEntity(DepartamentoLista obj) {
+		Optional<ButtonType> result = Alerta.showConfirmation("confirmacao", "Tem certeza que deseja deletar?");
+		// usamos o get por que o optional carrega outro objeto dentro dele
+		if (result.get() == ButtonType.OK) {
+			if (servico == null) {
+				throw new IllegalStateException("servico esta nulo");
+			}
+			try {
+				servico.remove(obj);
+				updateTableView();
+			} catch (DbIntegrityException e) {
+				Alerta.showAlert("erro ao remover", null, "erro ao remover o objeto ", AlertType.ERROR);
+			}
+		}
 	}
 
 }
