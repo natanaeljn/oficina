@@ -30,6 +30,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Seller;
+import model.services.ServicoDepartamento;
 import model.services.VendedorDepartamento;
 
 public class VendedorController implements Initializable, MudarDataListado {
@@ -111,7 +112,8 @@ public class VendedorController implements Initializable, MudarDataListado {
 
 			SellerFormController controller  = loader.getController();
 			controller.setSeller(obj);
-			controller.setServicoSeller(new VendedorDepartamento());
+			controller.setServicos(new VendedorDepartamento(), new ServicoDepartamento());
+			controller.carregarObjetosAssociados();
 			controller.reescreverData(this);
 			controller.UpdateFormaData();
 
@@ -123,6 +125,7 @@ public class VendedorController implements Initializable, MudarDataListado {
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
+			e.printStackTrace();
 			Alerta.showAlert("IO excessao", "errro de carregamento", e.getMessage(), AlertType.ERROR);
 		}
 	}
