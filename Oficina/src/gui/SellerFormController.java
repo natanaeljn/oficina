@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -126,6 +128,28 @@ public class SellerFormController implements Initializable {
 		if (excessao.Geterros().size() > 0) {
 			throw excessao;
 		}
+		if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			excessao.addErro("email", "o campo nao pode ser vazio");
+		}
+		obj.setEmail(txtEmail.getText());
+		//instant pega o valor do datepicker e converte
+		if(txtdbNascimento.getValue()==null) {
+			excessao.addErro("birthDate", "o campo nao pode ser vazio");
+		}
+		else {
+		Instant instant = Instant.from(txtdbNascimento.getValue().atStartOfDay(ZoneId.systemDefault()));
+		
+		obj.setBirthDate(Date.from(instant));
+		}
+		if (txtSalario.getText() == null || txtSalario.getText().trim().equals("")) {
+			excessao.addErro("baseSalary", "o campo nao pode ser vazio");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(txtSalario.getText()));
+		
+		obj.setDepartment(comboBoxDepartamento.getValue());
+		if (excessao.Geterros().size() > 0) {
+			throw excessao;
+		}
 
 		return obj;
 	}
@@ -184,9 +208,34 @@ public class SellerFormController implements Initializable {
 
 	private void setMensagemErro(Map<String, String> erro) {
 		Set<String> fields = erro.keySet();
-		if (fields.contains("nome")) {
-			labelErro.setText(erro.get("nome"));
+		if (fields.contains("name")) {
+			labelErro.setText(erro.get("name"));
 
+		}
+		else {
+			labelErro.setText("");
+		}
+		if (fields.contains("email")) {
+			 labelErroEmail.setText(erro.get("email"));
+
+		}
+		else {
+			labelErroEmail.setText("");
+		}
+		if (fields.contains("baseSalary")) {
+			labelErroSalario.setText(erro.get("baseSalary"));
+
+		}
+		else {
+			labelErroSalario.setText("");
+		}
+		
+		if (fields.contains("birthDate")) {
+			labelErroNascimento.setText(erro.get("birthDate"));
+
+		}
+		else {
+			labelErroNascimento.setText("");
 		}
 	}
 
